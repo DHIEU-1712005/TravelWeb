@@ -1,0 +1,52 @@
+﻿@model TravelWeb.Models.Destination
+@{
+    ViewData["Title"] = "Thêm Điểm đến";
+    Layout = "_AdminLayout";
+}
+
+<div class="data-card">
+    <h5><i class="fas fa-plus-circle me-2"></i>Thêm Điểm đến mới</h5>
+    <form asp-action="CreateDestination" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Tên điểm đến *</label>
+                <input asp-for="Name" class="form-control" required placeholder="VD: Hạ Long" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Thành phố</label>
+                <input asp-for="City" class="form-control" placeholder="VD: Quảng Ninh" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Vùng miền</label>
+                <select asp-for="Region" class="form-select">
+                    <option value="Miền Bắc">Miền Bắc</option>
+                    <option value="Miền Trung">Miền Trung</option>
+                    <option value="Miền Nam">Miền Nam</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Quốc gia</label>
+                <input asp-for="Country" class="form-control" value="Việt Nam" />
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">Mô tả</label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">🖼️ Ảnh đại diện</label>
+                <input type="file" name="imageFile" class="form-control" accept="image/*" />
+            </div>
+            <div class="col-md-12">
+                <div class="form-check">
+                    <input asp-for="IsFeatured" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label">⭐ Điểm đến nổi bật (hiện trang chủ)</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <a href="/Admin/Destinations" class="btn btn-secondary">Hủy</a>
+                <button type="submit" class="btn-admin"><i class="fas fa-save me-1"></i> Lưu</button>
+            </div>
+        </div>
+    </form>
+</div>
