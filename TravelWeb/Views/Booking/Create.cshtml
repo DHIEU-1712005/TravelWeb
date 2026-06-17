@@ -1,0 +1,114 @@
+@model TravelWeb.Models.Booking
+@{
+    ViewData["Title"] = "Đặt tour";
+    var tour = ViewBag.Tour as TravelWeb.Models.Tour;
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1>🎫 Đặt tour</h1>
+        <p>Hoàn tất thông tin để đặt tour ngay</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-8">
+                <div class="form-card">
+                    <h4 class="mb-4">📝 Thông tin đặt tour</h4>
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        <input asp-for="TourId" type="hidden" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Họ tên người liên hệ *</label>
+                                <input asp-for="ContactName" class="form-control" required placeholder="Nguyễn Văn A" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Số điện thoại *</label>
+                                <input asp-for="ContactPhone" class="form-control" required placeholder="0901234567" />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Email *</label>
+                                <input asp-for="ContactEmail" type="email" class="form-control" required placeholder="email@example.com" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Ngày khởi hành *</label>
+                                <input asp-for="DepartureDate" type="date" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Số người lớn *</label>
+                                <input asp-for="NumAdults" type="number" min="1" max="20" class="form-control" required id="numAdults" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Số trẻ em</label>
+                                <input asp-for="NumChildren" type="number" min="0" max="20" class="form-control" id="numChildren" />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">💳 Phương thức thanh toán</label>
+                                <select asp-for="PaymentMethod" class="form-select">
+                                    <option value="bank_transfer">🏦 Chuyển khoản ngân hàng (Khuyên dùng)</option>
+                                    <option value="cash">💵 Tiền mặt khi nhận tour</option>
+                                    <option value="momo">📱 Ví MoMo</option>
+                                    <option value="vnpay">💳 VNPay</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Yêu cầu đặc biệt</label>
+                                <textarea asp-for="SpecialRequests" class="form-control" rows="3" placeholder="VD: ăn chay, dị ứng hải sản..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-warm btn-lg">
+                                <i class="fas fa-check-circle me-2"></i>Xác nhận đặt tour
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="price-box">
+                    <h5>📋 Tour của bạn</h5>
+                    <hr style="border-color: rgba(255,255,255,0.3);" />
+                    <p class="text-start"><strong>@tour?.Name</strong></p>
+                    <p class="mb-1 text-start"><i class="fas fa-map-marker-alt me-2"></i>@tour?.Destination?.Name</p>
+                    <p class="mb-1 text-start"><i class="fas fa-clock me-2"></i>@tour?.DurationDays ngày @tour?.DurationNights đêm</p>
+                    <p class="mb-3 text-start"><i class="fas fa-bus me-2"></i>@tour?.TransportType</p>
+                    <hr style="border-color: rgba(255,255,255,0.3);" />
+                    <p class="text-start mb-2">Người lớn: <strong>@tour?.PriceAdult.ToString("N0") đ</strong></p>
+                    <p class="text-start mb-2">Trẻ em: <strong>@(tour?.PriceChild?.ToString("N0") ?? "0") đ</strong></p>
+                    @if (tour?.DiscountPercent > 0)
+                    {
+                        <p class="text-start mb-2 text-warning">Giảm giá: <strong>-@tour.DiscountPercent.ToString("0")%</strong></p>
+                    }
+                    <hr style="border-color: rgba(255,255,255,0.3);" />
+                    <p class="mb-0">Tổng tạm tính</p>
+                    <div class="price" id="totalPrice">@tour?.FinalPrice.ToString("N0") đ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        const adultPrice = @(tour?.FinalPrice ?? 0);
+        const childPrice = @((tour?.PriceChild ?? 0) * (1 - (tour?.DiscountPercent ?? 0) / 100));
+        const numAdults = document.getElementById('numAdults');
+        const numChildren = document.getElementById('numChildren');
+        const totalPrice = document.getElementById('totalPrice');
+
+        function updatePrice() {
+            const total = (parseInt(numAdults.value) || 0) * adultPrice + (parseInt(numChildren.value) || 0) * childPrice;
+            totalPrice.innerText = new Intl.NumberFormat('vi-VN').format(total) + ' đ';
+        }
+
+        numAdults.addEventListener('input', updatePrice);
+        numChildren.addEventListener('input', updatePrice);
+        updatePrice();
+    </script>
+}

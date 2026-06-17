@@ -1,0 +1,125 @@
+@model TravelWeb.Models.Tour
+@{
+    ViewData["Title"] = "Sửa Tour";
+    Layout = "_AdminLayout";
+    var destinations = ViewBag.Destinations as List<TravelWeb.Models.Destination>;
+    var categories = ViewBag.Categories as List<TravelWeb.Models.Category>;
+}
+
+<div class="data-card">
+    <h5><i class="fas fa-edit me-2"></i>Sửa Tour: @Model.Name</h5>
+    <form asp-action="EditTour" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input asp-for="TourId" type="hidden" />
+        <input asp-for="ThumbnailUrl" type="hidden" />
+        <input asp-for="CreatedAt" type="hidden" />
+        <input asp-for="BookingCount" type="hidden" />
+        <input asp-for="ViewCount" type="hidden" />
+        <input asp-for="RatingAvg" type="hidden" />
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Mã Tour</label>
+                <input asp-for="TourCode" class="form-control" />
+            </div>
+            <div class="col-md-8">
+                <label class="form-label">Tên Tour</label>
+                <input asp-for="Name" class="form-control" required />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Điểm đến</label>
+                <select asp-for="DestinationId" class="form-select" required>
+                    @foreach (var d in destinations ?? new())
+                    {
+                        <option value="@d.DestinationId" selected="@(Model.DestinationId == d.DestinationId)">@d.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Danh mục</label>
+                <select asp-for="CategoryId" class="form-select" required>
+                    @foreach (var c in categories ?? new())
+                    {
+                        <option value="@c.CategoryId" selected="@(Model.CategoryId == c.CategoryId)">@c.Icon @c.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Số ngày</label>
+                <input asp-for="DurationDays" type="number" class="form-control" required />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Số đêm</label>
+                <input asp-for="DurationNights" type="number" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Khởi hành từ</label>
+                <input asp-for="DepartureLocation" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Phương tiện</label>
+                <input asp-for="TransportType" class="form-control" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Giá người lớn</label>
+                <input asp-for="PriceAdult" type="number" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Giá trẻ em</label>
+                <input asp-for="PriceChild" type="number" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Giảm giá (%)</label>
+                <input asp-for="DiscountPercent" type="number" class="form-control" step="0.01" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Trạng thái</label>
+                <select asp-for="Status" class="form-select">
+                    <option value="active">Hoạt động</option>
+                    <option value="inactive">Tạm ẩn</option>
+                </select>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <div class="form-check">
+                    <input asp-for="IsFeatured" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label">Tour nổi bật</label>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <label class="form-label">🖼️ Đổi ảnh đại diện</label>
+                @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+                {
+                    <div class="mb-2">
+                        <img src="@Model.ThumbnailUrl" style="max-width: 250px; border-radius: 8px; border: 2px solid #eee;" />
+                        <p class="mt-1"><small class="text-muted">📌 Ảnh hiện tại</small></p>
+                    </div>
+                }
+                <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                <small class="text-muted">Chọn file ảnh mới (jpg/png/gif/webp). Bỏ trống nếu giữ ảnh cũ.</small>
+            </div>
+
+            <div class="col-md-12">
+                <label class="form-label">Mô tả</label>
+                <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">Bao gồm</label>
+                <textarea asp-for="Includes" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">Không bao gồm</label>
+                <textarea asp-for="Excludes" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="col-12">
+                <a href="/Admin/Tours" class="btn btn-secondary">Hủy</a>
+                <button type="submit" class="btn-admin"><i class="fas fa-save me-1"></i> Cập nhật</button>
+            </div>
+        </div>
+    </form>
+</div>

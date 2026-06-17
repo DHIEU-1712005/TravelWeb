@@ -1,0 +1,163 @@
+@model TravelWeb.Models.Tour
+@{
+    ViewData["Title"] = Model.Name;
+    var relatedTours = ViewBag.RelatedTours as List<TravelWeb.Models.Tour>;
+}
+
+<section class="section">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Tour" asp-action="Index">Tour</a></li>
+                <li class="breadcrumb-item active">@Model.Name</li>
+            </ol>
+        </nav>
+
+        <div class="row g-4">
+            <!-- Tour info -->
+            <div class="col-lg-8">
+                <div class="tour-detail-header">
+                    @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+                    {
+                        <img src="@Model.ThumbnailUrl" class="tour-detail-image" alt="@Model.Name" />
+                    }
+                    else
+                    {
+                        <div class="tour-detail-image-placeholder">🏖️</div>
+                    }
+                    <div class="tour-detail-body">
+                        <h2>@Model.Name</h2>
+                        <div class="tour-meta">
+                            <span class="tour-meta-item"><i class="fas fa-map-marker-alt"></i> @Model.Destination?.Name</span>
+                            <span class="tour-meta-item"><i class="fas fa-clock"></i> @Model.DurationDays ngày @Model.DurationNights đêm</span>
+                            <span class="tour-meta-item"><i class="fas fa-bus"></i> @Model.TransportType</span>
+                            <span class="tour-meta-item"><i class="fas fa-plane-departure"></i> @Model.DepartureLocation</span>
+                            <span class="tour-meta-item"><i class="fas fa-users"></i> Tối đa @Model.MaxParticipants người</span>
+                        </div>
+
+                        <hr />
+
+                        <h4 class="mt-4 mb-3">📝 Mô tả tour</h4>
+                        <p>@Model.Description</p>
+                        @if (!string.IsNullOrEmpty(Model.Detail))
+                        {
+                            <div>@Model.Detail</div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Includes))
+                        {
+                            <h4 class="mt-4 mb-3">✅ Bao gồm</h4>
+                            <p>@Model.Includes</p>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Excludes))
+                        {
+                            <h4 class="mt-4 mb-3">❌ Không bao gồm</h4>
+                            <p>@Model.Excludes</p>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <h4 class="mt-4 mb-3">⚠️ Lưu ý</h4>
+                            <p>@Model.Notes</p>
+                        }
+                    </div>
+                </div>
+
+                <!-- Reviews -->
+                <div class="form-card mt-4">
+                    <h4>⭐ Đánh giá từ khách hàng</h4>
+                    @if (Model.Reviews != null && Model.Reviews.Any())
+                    {
+                        foreach (var r in Model.Reviews.Take(5))
+                        {
+                            <div class="review-item">
+                                <div class="d-flex justify-content-between">
+                                    <strong>@r.User?.FullName</strong>
+                                    <span class="review-stars">
+                                        @for (int i = 0; i < r.Rating; i++)
+                                        {
+                                            <i class="fas fa-star"></i>
+                                        }
+                                    </span>
+                                </div>
+                                <p class="mb-0 mt-2">@r.Content</p>
+                                <small class="text-muted">@r.CreatedAt.ToString("dd/MM/yyyy")</small>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center my-4">Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá!</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Price box -->
+            <div class="col-lg-4">
+                <div class="price-box">
+                    <p class="mb-0">Giá từ</p>
+                    <div class="price">@Model.FinalPrice.ToString("N0") đ</div>
+                    @if (Model.DiscountPercent > 0)
+                    {
+                        <p><del>@Model.PriceAdult.ToString("N0") đ</del> <span class="badge bg-danger ms-2">-@Model.DiscountPercent.ToString("0")%</span></p>
+                    }
+                    <hr style="border-color: rgba(255,255,255,0.3);" />
+                    <p class="mb-1"><i class="fas fa-child me-2"></i>Trẻ em: @(Model.PriceChild?.ToString("N0") ?? "0") đ</p>
+                    <p class="mb-3"><i class="fas fa-user me-2"></i>Người lớn: @Model.PriceAdult.ToString("N0") đ</p>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-controller="Booking" asp-action="Create" asp-route-tourId="@Model.TourId" class="btn">
+                            <i class="fas fa-shopping-cart me-2"></i>Đặt tour ngay
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Tour", new { id = Model.TourId })" class="btn">
+                            <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập để đặt tour
+                        </a>
+                    }
+
+                    <p class="mt-3 mb-0" style="font-size: 13px;">
+                        <i class="fas fa-phone me-2"></i>Hotline: <strong>1900 1234</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Tours -->
+        @if (relatedTours != null && relatedTours.Any())
+        {
+            <div class="mt-5">
+                <h3 class="mb-4">🔥 Tour liên quan</h3>
+                <div class="row g-4">
+                    @foreach (var t in relatedTours)
+                    {
+                        <div class="col-md-4">
+                            <div class="tour-card">
+                                @if (!string.IsNullOrEmpty(t.ThumbnailUrl))
+                                {
+                                    <img src="@t.ThumbnailUrl" class="tour-card-img" alt="@t.Name" />
+                                }
+                                else
+                                {
+                                    <div class="tour-card-img-placeholder">🏖️</div>
+                                }
+                                <div class="tour-card-body">
+                                    <h5 class="tour-card-title"><a asp-action="Details" asp-route-id="@t.TourId">@t.Name</a></h5>
+                                    <p class="tour-info"><i class="fas fa-map-marker-alt"></i> @t.Destination?.Name</p>
+                                    <div class="tour-price">
+                                        <div class="tour-price-current">@t.FinalPrice.ToString("N0") đ</div>
+                                        <a asp-action="Details" asp-route-id="@t.TourId" class="btn btn-warm">Xem</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</section>

@@ -1,0 +1,124 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
+    var recentBookings = ViewBag.RecentBookings as List<TravelWeb.Models.Booking>;
+    var topTours = ViewBag.TopTours as List<TravelWeb.Models.Tour>;
+    int rank = 1;
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card blue">
+            <i class="fas fa-map-marked-alt icon"></i>
+            <p>Tổng số Tour</p>
+            <h3>@ViewBag.TotalTours</h3>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card green">
+            <i class="fas fa-users icon"></i>
+            <p>Người dùng</p>
+            <h3>@ViewBag.TotalUsers</h3>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card orange">
+            <i class="fas fa-suitcase icon"></i>
+            <p>Tổng đặt tour</p>
+            <h3>@ViewBag.TotalBookings</h3>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card purple">
+            <i class="fas fa-dollar-sign icon"></i>
+            <p>Doanh thu</p>
+            <h3>@(((decimal)ViewBag.TotalRevenue).ToString("N0"))đ</h3>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="stat-card yellow">
+            <i class="fas fa-clock icon"></i>
+            <p>Booking chờ xác nhận</p>
+            <h3>@ViewBag.PendingBookings</h3>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="stat-card red">
+            <i class="fas fa-envelope icon"></i>
+            <p>Tin nhắn mới</p>
+            <h3>@ViewBag.TotalContacts</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-7">
+        <div class="data-card">
+            <h5><i class="fas fa-history me-2"></i>Booking gần đây</h5>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Mã</th>
+                        <th>Khách hàng</th>
+                        <th>Tour</th>
+                        <th>Tiền</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (recentBookings != null && recentBookings.Any())
+                    {
+                        foreach (var b in recentBookings)
+                        {
+                            <tr>
+                                <td><strong>@b.BookingCode</strong></td>
+                                <td>@b.ContactName</td>
+                                <td>@b.Tour?.Name</td>
+                                <td>@b.FinalAmount.ToString("N0")đ</td>
+                                <td>
+                                    <span class="badge-status badge-@b.BookingStatus">@b.BookingStatus</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5" class="text-center text-muted py-3">Chưa có booking nào</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="data-card">
+            <h5><i class="fas fa-fire me-2"></i>Top Tour bán chạy</h5>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tour</th>
+                        <th>Đặt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (topTours != null && topTours.Any())
+                    {
+                        foreach (var t in topTours)
+                        {
+                            <tr>
+                                <td><strong>#@rank</strong></td>
+                                <td>@t.Name</td>
+                                <td><span class="badge bg-warning text-dark">@t.BookingCount</span></td>
+                            </tr>
+                            rank++;
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="3" class="text-center text-muted py-3">Chưa có tour</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

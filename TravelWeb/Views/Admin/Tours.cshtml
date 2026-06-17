@@ -1,0 +1,75 @@
+@model List<TravelWeb.Models.Tour>
+@{
+    ViewData["Title"] = "Quản lý Tour";
+    Layout = "_AdminLayout";
+}
+<div class="data-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0"><i class="fas fa-map-marked-alt me-2"></i>Danh sách Tour (@Model.Count)</h5>
+        <a href="/Admin/CreateTour" class="btn-admin"><i class="fas fa-plus me-1"></i> Thêm Tour</a>
+    </div>
+    <form method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="🔍 Tìm tour theo tên..." />
+            <button type="submit" class="btn-admin">Tìm</button>
+        </div>
+    </form>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ảnh</th>
+                <th>Mã</th>
+                <th>Tên Tour</th>
+                <th>Điểm đến</th>
+                <th>Giá</th>
+                <th>Số ngày</th>
+                <th>Đặt</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in Model)
+            {
+                <tr>
+                    <td>@t.TourId</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(t.ThumbnailUrl))
+                        {
+                            <img src="@t.ThumbnailUrl" alt="@t.Name" style="width:70px;height:50px;object-fit:cover;border-radius:6px;" />
+                        }
+                        else
+                        {
+                            <div style="width:70px;height:50px;background:linear-gradient(135deg,#ff7e29,#ffc94d);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:24px;">🏖️</div>
+                        }
+                    </td>
+                    <td><strong>@t.TourCode</strong></td>
+                    <td>@t.Name</td>
+                    <td>@t.Destination?.Name</td>
+                    <td>@t.PriceAdult.ToString("N0")đ</td>
+                    <td>@t.DurationDays ngày</td>
+                    <td><span class="badge bg-info">@t.BookingCount</span></td>
+                    <td>
+                        @if (t.Status == "active")
+                        {
+                            <span class="badge-status badge-active">Hoạt động</span>
+                        }
+                        else
+                        {
+                            <span class="badge-status badge-banned">Tạm ẩn</span>
+                        }
+                    </td>
+                    <td>
+                        <a href="/Admin/EditTour/@t.TourId" class="btn btn-sm btn-warning" title="Sửa"><i class="fas fa-edit"></i></a>
+                        <form asp-action="DeleteTour" method="post" style="display:inline" onsubmit="return confirm('Bạn chắc muốn xóa tour này?')">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@t.TourId" />
+                            <button type="submit" class="btn btn-sm btn-danger" title="Xóa"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

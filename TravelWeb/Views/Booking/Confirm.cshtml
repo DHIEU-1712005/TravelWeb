@@ -1,0 +1,75 @@
+@model TravelWeb.Models.Booking
+@{
+    ViewData["Title"] = "Đặt tour thành công";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="form-card text-center">
+                    <div class="feature-icon mx-auto mb-4" style="width: 100px; height: 100px; font-size: 50px;">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h2 class="text-warm">🎉 Đặt tour thành công!</h2>
+                    <p class="lead">Cảm ơn @Model.ContactName đã đặt tour tại Vi Vu Việt Nam</p>
+                    <p>Mã đơn của bạn: <strong class="text-warm fs-4">@Model.BookingCode</strong></p>
+
+                    <hr class="my-4" />
+
+                    <div class="text-start">
+                        <h5>📋 Chi tiết đặt tour</h5>
+                        <table class="table">
+                            <tr>
+                                <th>Tour:</th>
+                                <td>@Model.Tour?.Name</td>
+                            </tr>
+                            <tr>
+                                <th>Điểm đến:</th>
+                                <td>@Model.Tour?.Destination?.Name</td>
+                            </tr>
+                            <tr>
+                                <th>Ngày khởi hành:</th>
+                                <td>@Model.DepartureDate.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                            <tr>
+                                <th>Số người:</th>
+                                <td>@Model.NumAdults người lớn, @Model.NumChildren trẻ em</td>
+                            </tr>
+                            <tr>
+                                <th>Liên hệ:</th>
+                                <td>@Model.ContactName - @Model.ContactPhone</td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td>@Model.ContactEmail</td>
+                            </tr>
+                            <tr>
+                                <th>Phương thức thanh toán:</th>
+                                <td>@Model.PaymentMethod</td>
+                            </tr>
+                            <tr class="table-warning">
+                                <th>Tổng tiền:</th>
+                                <td><strong class="text-warm fs-4">@Model.FinalAmount.ToString("N0") đ</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Chúng tôi sẽ liên hệ với bạn trong vòng 24h để xác nhận đặt tour và hướng dẫn thanh toán.
+                    </div>
+
+                    <div class="mt-4">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-warm me-2">
+                            <i class="fas fa-home me-2"></i>Trang chủ
+                        </a>
+                        <a asp-controller="Tour" asp-action="Index" class="btn btn-warm">
+                            <i class="fas fa-search me-2"></i>Khám phá tour khác
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

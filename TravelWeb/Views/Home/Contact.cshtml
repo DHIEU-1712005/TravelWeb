@@ -1,0 +1,75 @@
+@model TravelWeb.Models.Contact
+@{
+    ViewData["Title"] = "Liên hệ";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1>📞 Liên hệ với chúng tôi</h1>
+        <p>Chúng tôi luôn sẵn sàng hỗ trợ bạn</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <h5>Địa chỉ</h5>
+                    <p>123 Nguyễn Huệ, Quận 1<br>TP. Hồ Chí Minh, Việt Nam</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-phone"></i></div>
+                    <h5>Hotline</h5>
+                    <p>1900 1234<br>(8:00 - 22:00 hằng ngày)</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-envelope"></i></div>
+                    <h5>Email</h5>
+                    <p>info@vivuvietnam.vn<br>support@vivuvietnam.vn</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-8 mx-auto">
+                <div class="form-card">
+                    <h3 class="mb-4 text-center">💬 Gửi tin nhắn cho chúng tôi</h3>
+                    <form asp-action="Contact" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Họ tên *</label>
+                                <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email *</label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="email@example.com" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Số điện thoại</label>
+                                <input asp-for="Phone" class="form-control" placeholder="0901234567" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Chủ đề</label>
+                                <input asp-for="Subject" class="form-control" placeholder="Cần tư vấn tour..." />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Nội dung *</label>
+                                <textarea asp-for="Message" class="form-control" rows="5" placeholder="Nhập nội dung tin nhắn..." required></textarea>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-warm btn-lg"><i class="fas fa-paper-plane me-2"></i>Gửi tin nhắn</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

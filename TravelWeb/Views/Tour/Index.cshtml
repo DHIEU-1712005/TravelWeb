@@ -1,0 +1,137 @@
+@model List<TravelWeb.Models.Tour>
+@{
+    ViewData["Title"] = "Tour du lịch";
+    var categories = ViewBag.Categories as List<TravelWeb.Models.Category>;
+    var destinations = ViewBag.Destinations as List<TravelWeb.Models.Destination>;
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1>🗺️ Tour du lịch</h1>
+        <p>Khám phá hơn 500+ tour hấp dẫn trên khắp Việt Nam</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Filter sidebar -->
+            <div class="col-lg-3">
+                <div class="filter-sidebar">
+                    <h5><i class="fas fa-filter me-2"></i>Bộ lọc</h5>
+                    <form method="get">
+                        <div>
+                            <label class="form-label">Tìm kiếm</label>
+                            <input type="text" name="search" class="form-control" value="@ViewBag.Search" placeholder="Tên tour..." />
+                        </div>
+                        <div>
+                            <label class="form-label">Điểm đến</label>
+                            <select name="destinationId" class="form-select">
+                                <option value="">Tất cả</option>
+                                @foreach (var d in destinations ?? new())
+                                {
+                                    <option value="@d.DestinationId" selected="@(ViewBag.DestinationId == d.DestinationId)">@d.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Loại tour</label>
+                            <select name="categoryId" class="form-select">
+                                <option value="">Tất cả</option>
+                                @foreach (var c in categories ?? new())
+                                {
+                                    <option value="@c.CategoryId" selected="@(ViewBag.CategoryId == c.CategoryId)">@c.Icon @c.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Giá từ</label>
+                            <input type="number" name="minPrice" class="form-control" placeholder="0" />
+                        </div>
+                        <div>
+                            <label class="form-label">Giá đến</label>
+                            <input type="number" name="maxPrice" class="form-control" placeholder="10000000" />
+                        </div>
+                        <button type="submit" class="btn btn-warm w-100 mt-3">
+                            <i class="fas fa-search me-2"></i>Lọc kết quả
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-warm w-100 mt-2">
+                            <i class="fas fa-redo me-2"></i>Đặt lại
+                        </a>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tour list -->
+            <div class="col-lg-9">
+                @if (Model.Any())
+                {
+                    <p class="mb-4">Tìm thấy <strong>@Model.Count</strong> tour</p>
+                    <div class="row g-4">
+                        @foreach (var t in Model)
+                        {
+                            <div class="col-md-4">
+                                <div class="tour-card">
+                                    <div style="position: relative;">
+                                        @if (!string.IsNullOrEmpty(t.ThumbnailUrl))
+                                        {
+                                            <img src="@t.ThumbnailUrl" class="tour-card-img" alt="@t.Name" />
+                                        }
+                                        else
+                                        {
+                                            <div class="tour-card-img-placeholder">🏖️</div>
+                                        }
+                                        @if (t.DiscountPercent > 0)
+                                        {
+                                            <span class="tour-badge">-@t.DiscountPercent.ToString("0")%</span>
+                                        }
+                                    </div>
+                                    <div class="tour-card-body">
+                                        <h5 class="tour-card-title">
+                                            <a asp-action="Details" asp-route-id="@t.TourId">@t.Name</a>
+                                        </h5>
+                                        <p class="tour-info"><i class="fas fa-map-marker-alt"></i> @t.Destination?.Name</p>
+                                        <p class="tour-info"><i class="fas fa-clock"></i> @t.DurationDays ngày @t.DurationNights đêm</p>
+                                        <p class="tour-info"><i class="fas fa-bus"></i> @t.TransportType</p>
+                                        <div class="tour-price">
+                                            <div>
+                                                <div class="tour-price-current">@t.FinalPrice.ToString("N0") đ</div>
+                                                @if (t.DiscountPercent > 0)
+                                                {
+                                                    <div class="tour-price-old">@t.PriceAdult.ToString("N0") đ</div>
+                                                }
+                                            </div>
+                                            <a asp-action="Details" asp-route-id="@t.TourId" class="btn btn-warm">Xem</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        <nav class="mt-5">
+                            <ul class="pagination justify-content-center">
+                                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                {
+                                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                        <a class="page-link" href="?page=@i&search=@ViewBag.Search">@i</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                        <h4>Không tìm thấy tour phù hợp</h4>
+                        <p class="text-muted">Vui lòng thử bộ lọc khác</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

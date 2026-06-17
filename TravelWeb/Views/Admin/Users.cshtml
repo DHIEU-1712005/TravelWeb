@@ -1,0 +1,93 @@
+@model List<TravelWeb.Models.User>
+@{
+    ViewData["Title"] = "Quản lý User";
+    Layout = "_AdminLayout";
+}
+
+<div class="data-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0"><i class="fas fa-users me-2"></i>Danh sách User (@Model.Count)</h5>
+    </div>
+
+    <form method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="🔍 Tìm theo tên hoặc email..." />
+            <button type="submit" class="btn-admin">Tìm</button>
+        </div>
+    </form>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Avatar</th>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>SĐT</th>
+                <th>Vai trò</th>
+                <th>Ngày tạo</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td>@u.UserId</td>
+                    <td>
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width:40px;height:40px;background:linear-gradient(135deg,#ff7e29,#ffc94d);color:white;font-weight:600;">
+                            @u.FullName.Substring(0, 1).ToUpper()
+                        </div>
+                    </td>
+                    <td><strong>@u.FullName</strong><br/><small class="text-muted">@u.Username</small></td>
+                    <td>@u.Email</td>
+                    <td>@u.Phone</td>
+                    <td>
+                        @if (u.RoleId == 1)
+                        {
+                            <span class="badge bg-danger">🛡️ Admin</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-primary">👤 Khách hàng</span>
+                        }
+                    </td>
+                    <td>@u.CreatedAt.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @if (u.Status == "active")
+                        {
+                            <span class="badge-status badge-active">Hoạt động</span>
+                        }
+                        else
+                        {
+                            <span class="badge-status badge-banned">Đã khóa</span>
+                        }
+                    </td>
+                    <td>
+                        @if (u.RoleId != 1)
+                        {
+                            <form asp-action="ToggleUserStatus" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@u.UserId" />
+                                <button class="btn btn-sm @(u.Status == "active" ? "btn-warning" : "btn-success")" title="@(u.Status == "active" ? "Khóa" : "Mở khóa")">
+                                    <i class="fas fa-@(u.Status == "active" ? "lock" : "unlock")"></i>
+                                </button>
+                            </form>
+                            <form asp-action="DeleteUser" method="post" style="display:inline" onsubmit="return confirm('Xóa user này?')">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@u.UserId" />
+                                <button class="btn btn-sm btn-danger" title="Xóa"><i class="fas fa-trash"></i></button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Không thể chỉnh sửa</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,78 @@
+@model List<TravelWeb.Models.Booking>
+@{
+    ViewData["Title"] = "Quản lý Booking";
+    Layout = "_AdminLayout";
+}
+
+<div class="data-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0"><i class="fas fa-suitcase me-2"></i>Danh sách Booking (@Model.Count)</h5>
+        <div>
+            <a href="/Admin/Bookings" class="btn btn-sm @(string.IsNullOrEmpty(ViewBag.Status as string) ? "btn-dark" : "btn-outline-dark")">Tất cả</a>
+            <a href="/Admin/Bookings?status=pending" class="btn btn-sm @(ViewBag.Status as string == "pending" ? "btn-warning" : "btn-outline-warning")">Chờ duyệt</a>
+            <a href="/Admin/Bookings?status=confirmed" class="btn btn-sm @(ViewBag.Status as string == "confirmed" ? "btn-success" : "btn-outline-success")">Đã xác nhận</a>
+            <a href="/Admin/Bookings?status=cancelled" class="btn btn-sm @(ViewBag.Status as string == "cancelled" ? "btn-danger" : "btn-outline-danger")">Đã hủy</a>
+        </div>
+    </div>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Mã</th>
+                <th>Khách hàng</th>
+                <th>Tour</th>
+                <th>SL</th>
+                <th>Khởi hành</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Thanh toán</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var b in Model)
+            {
+                <tr>
+                    <td><strong>@b.BookingCode</strong></td>
+                    <td>
+                        @b.ContactName<br/>
+                        <small class="text-muted">@b.ContactPhone</small>
+                    </td>
+                    <td>@b.Tour?.Name</td>
+                    <td>@b.NumAdults+@b.NumChildren</td>
+                    <td>@b.DepartureDate.ToString("dd/MM/yyyy")</td>
+                    <td><strong>@b.FinalAmount.ToString("N0")đ</strong></td>
+                    <td><span class="badge-status badge-@b.BookingStatus">@b.BookingStatus</span></td>
+                    <td>
+                        @if (b.PaymentStatus == "paid")
+                        {
+                            <span class="badge bg-success">Đã thanh toán</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Chưa thanh toán</span>
+                        }
+                    </td>
+                    <td>
+                        <a href="/Admin/BookingDetail/@b.BookingId" class="btn btn-sm btn-info" title="Chi tiết"><i class="fas fa-eye"></i></a>
+                        @if (b.BookingStatus == "pending")
+                        {
+                            <form asp-action="UpdateBookingStatus" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@b.BookingId" />
+                                <input type="hidden" name="status" value="confirmed" />
+                                <button class="btn btn-sm btn-success" title="Xác nhận"><i class="fas fa-check"></i></button>
+                            </form>
+                            <form asp-action="UpdateBookingStatus" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@b.BookingId" />
+                                <input type="hidden" name="status" value="cancelled" />
+                                <button class="btn btn-sm btn-danger" title="Hủy"><i class="fas fa-times"></i></button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

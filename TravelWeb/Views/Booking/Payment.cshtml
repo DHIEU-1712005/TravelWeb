@@ -1,0 +1,112 @@
+﻿@model TravelWeb.Models.Booking
+@{
+    ViewData["Title"] = "Thanh toán chuyển khoản";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1>💳 Thanh toán chuyển khoản</h1>
+        <p>Hoàn tất thanh toán để xác nhận đơn đặt tour</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Cột trái: Thông tin booking -->
+            <div class="col-md-5">
+                <div class="form-card">
+                    <h4 class="text-warm mb-3">📋 Thông tin đơn hàng</h4>
+                    <table class="table">
+                        <tr>
+                            <th>Mã đơn:</th>
+                            <td><strong class="text-warm">@Model.BookingCode</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Tour:</th>
+                            <td>@Model.Tour?.Name</td>
+                        </tr>
+                        <tr>
+                            <th>Khách hàng:</th>
+                            <td>@Model.ContactName</td>
+                        </tr>
+                        <tr>
+                            <th>SĐT:</th>
+                            <td>@Model.ContactPhone</td>
+                        </tr>
+                        <tr>
+                            <th>Ngày khởi hành:</th>
+                            <td>@Model.DepartureDate.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                        <tr>
+                            <th>Số người:</th>
+                            <td>@Model.NumAdults người lớn + @Model.NumChildren trẻ em</td>
+                        </tr>
+                        <tr class="table-warning">
+                            <th>Số tiền:</th>
+                            <td><strong class="text-warm fs-3">@Model.FinalAmount.ToString("N0") đ</strong></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Cột phải: QR Code -->
+            <div class="col-md-7">
+                <div class="form-card text-center">
+                    <h4 class="text-warm mb-3">🏦 Quét mã QR để thanh toán</h4>
+                    <p class="text-muted">Mở app ngân hàng của bạn và quét mã QR bên dưới</p>
+
+                    <div class="my-4">
+                        <img src="@ViewBag.QrUrl" alt="QR Code"
+                             style="max-width: 350px; border: 3px solid #ff7e29; border-radius: 15px; padding: 10px; background: white;" />
+                    </div>
+
+                    <div class="alert alert-warning text-start">
+                        <h6 class="mb-3">📝 Thông tin chuyển khoản thủ công:</h6>
+                        <p class="mb-1"><strong>Ngân hàng:</strong> @ViewBag.BankName</p>
+                        <p class="mb-1">
+                            <strong>Số tài khoản:</strong> <span id="accountNo">@ViewBag.AccountNumber</span>
+                            <button onclick="copyText('accountNo')" class="btn btn-sm btn-outline-warning ms-2">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </p>
+                        <p class="mb-1"><strong>Chủ tài khoản:</strong> @ViewBag.AccountName</p>
+                        <p class="mb-1"><strong>Số tiền:</strong> <span class="text-danger fw-bold">@Model.FinalAmount.ToString("N0") VNĐ</span></p>
+                        <p class="mb-0">
+                            <strong>Nội dung:</strong>
+                            <span id="content" class="text-danger fw-bold">@ViewBag.TransferContent</span>
+                            <button onclick="copyText('content')" class="btn btn-sm btn-outline-warning ms-2">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </p>
+                    </div>
+
+                    <div class="alert alert-info text-start">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Lưu ý quan trọng:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Vui lòng chuyển khoản <strong>chính xác số tiền</strong> và <strong>đúng nội dung</strong> để được xử lý tự động</li>
+                            <li>Đơn hàng sẽ được xác nhận trong <strong>5-15 phút</strong> sau khi nhận được tiền</li>
+                            <li>Nếu cần hỗ trợ, gọi hotline: <strong>1900 1234</strong></li>
+                        </ul>
+                    </div>
+
+                    <a asp-action="Confirm" asp-route-id="@Model.BookingId" class="btn btn-warm btn-lg mt-3">
+                        <i class="fas fa-check-circle me-2"></i>Tôi đã chuyển khoản
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Đã copy: ' + text);
+            });
+        }
+    </script>
+}
