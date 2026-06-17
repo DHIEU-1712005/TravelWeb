@@ -1,0 +1,35 @@
+﻿@model TravelWeb.Models.Category
+@{
+    ViewData["Title"] = "Thêm Danh mục";
+    Layout = "_AdminLayout";
+}
+
+<div class="data-card">
+    <h5><i class="fas fa-plus-circle me-2"></i>Thêm Danh mục mới</h5>
+    <form asp-action="CreateCategory" method="post">
+        @Html.AntiForgeryToken()
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label">Tên danh mục *</label>
+                <input asp-for="Name" class="form-control" required placeholder="VD: Biển đảo" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Icon (emoji)</label>
+                <input asp-for="Icon" class="form-control" placeholder="🏖️" maxlength="5" />
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">Slug (URL)</label>
+                <input asp-for="Slug" class="form-control" placeholder="bien-dao" />
+                <small class="text-muted">Không dấu, chữ thường, dùng dấu -</small>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">Mô tả</label>
+                <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-12">
+                <a href="/Admin/Categories" class="btn btn-secondary">Hủy</a>
+                <button type="submit" class="btn-admin"><i class="fas fa-save me-1"></i> Lưu</button>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,65 @@
+﻿@model TravelWeb.Models.Destination
+@{
+    ViewData["Title"] = "Sửa Điểm đến";
+    Layout = "_AdminLayout";
+}
+
+<div class="data-card">
+    <h5><i class="fas fa-edit me-2"></i>Sửa: @Model.Name</h5>
+    <form asp-action="EditDestination" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input asp-for="DestinationId" type="hidden" />
+        <input asp-for="ThumbnailUrl" type="hidden" />
+        <input asp-for="CreatedAt" type="hidden" />
+        <input asp-for="ViewCount" type="hidden" />
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Tên điểm đến *</label>
+                <input asp-for="Name" class="form-control" required />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Thành phố</label>
+                <input asp-for="City" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Vùng miền</label>
+                <select asp-for="Region" class="form-select">
+                    <option value="Miền Bắc">Miền Bắc</option>
+                    <option value="Miền Trung">Miền Trung</option>
+                    <option value="Miền Nam">Miền Nam</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Quốc gia</label>
+                <input asp-for="Country" class="form-control" />
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">Mô tả</label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">🖼️ Đổi ảnh đại diện</label>
+                @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+                {
+                    <div class="mb-2">
+                        <img src="@Model.ThumbnailUrl" style="max-width:250px;border-radius:8px;" />
+                        <p><small class="text-muted">📌 Ảnh hiện tại</small></p>
+                    </div>
+                }
+                <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                <small class="text-muted">Bỏ trống nếu giữ ảnh cũ</small>
+            </div>
+            <div class="col-md-12">
+                <div class="form-check">
+                    <input asp-for="IsFeatured" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label">⭐ Điểm đến nổi bật</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <a href="/Admin/Destinations" class="btn btn-secondary">Hủy</a>
+                <button type="submit" class="btn-admin"><i class="fas fa-save me-1"></i> Cập nhật</button>
+            </div>
+        </div>
+    </form>
+</div>

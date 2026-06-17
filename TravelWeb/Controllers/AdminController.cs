@@ -159,7 +159,164 @@ namespace TravelWeb.Controllers
             }
             return RedirectToAction(nameof(Tours));
         }
+        // ========== QUẢN LÝ ĐIỂM ĐẾN ==========
+        public async Task<IActionResult> Destinations()
+        {
+            var destinations = await _context.Destinations.OrderBy(d => d.Name).ToListAsync();
+            return View(destinations);
+        }
 
+        public IActionResult CreateDestination() => View(new Destination());
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateDestination(Destination destination, IFormFile? imageFile)
+        {
+            if (ModelState.IsValid)
+            {
+                var imagePath = await SaveDestinationImage(imageFile);
+                if (imagePath != null) destination.ThumbnailUrl = imagePath;
+
+                destination.CreatedAt = DateTime.Now;
+                _context.Destinations.Add(destination);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "✅ Thêm điểm đến thành công!";
+                return RedirectToAction(nameof(Destinations));
+            }
+            return View(destination);
+        }
+
+        public async Task<IActionResult> EditDestination(int id)
+        {
+            var d = await _context.Destinations.FindAsync(id);
+            if (d == null) return NotFound();
+            return View(d);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditDestination(Destination destination, IFormFile? imageFile)
+        {
+            if (ModelState.IsValid)
+            {
+                var imagePath = await SaveDestinationImage(imageFile);
+                if (imagePath != null) destination.ThumbnailUrl = imagePath;
+
+                _context.Destinations.Update(destination);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "✅ Cập nhật thành công!";
+                return RedirectToAction(nameof(Destinations));
+            }
+            return View(destination);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteDestination(int id)
+        {
+            var d = await _context.Destinations.FindAsync(id);
+            if (d != null)
+            {
+                // Kiểm tra có tour nào dùng không
+                bool hasTours = await _context.Tours.AnyAsync(t => t.DestinationId == id);
+                if (hasTours)
+                {
+                    TempData["Success"] = "❌ Không thể xóa! Có tour đang dùng điểm đến này.";
+                }
+                else
+                {
+                    _context.Destinations.Remove(d);
+                    await _context.SaveChangesAsync();
+                    TempData["Success"] = "🗑️ Đã xóa điểm đến!";
+                }
+            }
+            return RedirectToAction(nameof(Destinations));
+        }
+
+        private async Task<string?> SaveDestinationImage(IFormFile? file)
+        {
+            if (file == null || file.Length == 0) return null;
+            var ext = Path.GetExtension(file.FileName).ToLower();
+            var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+            if (!allowed.Contains(ext)) return null;
+
+            var fileName = $"dest_{DateTime.Now.Ticks}{ext}";
+            var folder = Path.Combine(_env.WebRootPath, "images", "destinations");
+            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+            var filePath = Path.Combine(folder, fileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            return $"/images/destinations/{fileName}";
+        }
+
+        // ========== QUẢN LÝ DANH MỤC ==========
+        public async Task<IActionResult> Categories()
+        {
+            var cats = await _context.Categories.ToListAsync();
+            return View(cats);
+        }
+
+        public IActionResult CreateCategory() => View(new Category());
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCategory(Category category)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Categories.Add(category);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "✅ Thêm danh mục thành công!";
+                return RedirectToAction(nameof(Categories));
+            }
+            return View(category);
+        }
+
+        public async Task<IActionResult> EditCategory(int id)
+        {
+            var c = await _context.Categories.FindAsync(id);
+            if (c == null) return NotFound();
+            return View(c);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCategory(Category category)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Categories.Update(category);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "✅ Cập nhật thành công!";
+                return RedirectToAction(nameof(Categories));
+            }
+            return View(category);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var c = await _context.Categories.FindAsync(id);
+            if (c != null)
+            {
+                bool hasTours = await _context.Tours.AnyAsync(t => t.CategoryId == id);
+                if (hasTours)
+                {
+                    TempData["Success"] = "❌ Không thể xóa! Có tour đang dùng danh mục này.";
+                }
+                else
+                {
+                    _context.Categories.Remove(c);
+                    await _context.SaveChangesAsync();
+                    TempData["Success"] = "🗑️ Đã xóa danh mục!";
+                }
+            }
+            return RedirectToAction(nameof(Categories));
+        }
         // ========== QUẢN LÝ BOOKING ==========
         public async Task<IActionResult> Bookings(string? status)
         {

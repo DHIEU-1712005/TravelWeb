@@ -1,0 +1,63 @@
+﻿@model List<TravelWeb.Models.Destination>
+@{
+    ViewData["Title"] = "Quản lý Điểm đến";
+    Layout = "_AdminLayout";
+}
+
+<div class="data-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Danh sách Điểm đến (@Model.Count)</h5>
+        <a href="/Admin/CreateDestination" class="btn-admin"><i class="fas fa-plus me-1"></i> Thêm điểm đến</a>
+    </div>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ảnh</th>
+                <th>Tên</th>
+                <th>Vùng</th>
+                <th>Thành phố</th>
+                <th>Nổi bật</th>
+                <th>Lượt xem</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var d in Model)
+            {
+                <tr>
+                    <td>@d.DestinationId</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(d.ThumbnailUrl))
+                        {
+                            <img src="@d.ThumbnailUrl" alt="@d.Name" style="width:70px;height:50px;object-fit:cover;border-radius:6px;" />
+                        }
+                        else
+                        {
+                            <div style="width:70px;height:50px;background:linear-gradient(135deg,#ff7e29,#ff8fa3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:24px;">📷</div>
+                        }
+                    </td>
+                    <td><strong>@d.Name</strong></td>
+                    <td>@d.Region</td>
+                    <td>@d.City</td>
+                    <td>
+                        @if (d.IsFeatured)
+                        {
+                            <span class="badge bg-warning text-dark">⭐ Nổi bật</span>
+                        }
+                    </td>
+                    <td><span class="badge bg-info">@d.ViewCount</span></td>
+                    <td>
+                        <a href="/Admin/EditDestination/@d.DestinationId" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                        <form asp-action="DeleteDestination" method="post" style="display:inline" onsubmit="return confirm('Xóa điểm đến này?')">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@d.DestinationId" />
+                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

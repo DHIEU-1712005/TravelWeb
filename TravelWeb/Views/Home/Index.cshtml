@@ -37,7 +37,7 @@
 <section class="section">
     <div class="container">
         <div class="section-title">
-            <h2>🎯 Loại hình du lịch</h2>
+            <h2> Loại hình du lịch</h2>
             <p>Chọn loại tour phù hợp với sở thích của bạn</p>
         </div>
         <div class="row g-4">
@@ -60,7 +60,7 @@
 <section class="section" style="background: white;">
     <div class="container">
         <div class="section-title">
-            <h2>📍 Điểm đến nổi bật</h2>
+            <h2> Điểm đến nổi bật</h2>
             <p>Những địa danh tuyệt vời đang chờ bạn khám phá</p>
         </div>
         <div class="row g-4">
@@ -69,7 +69,14 @@
                 <div class="col-md-4 col-sm-6">
                     <a asp-controller="Tour" asp-action="Index" asp-route-destinationId="@d.DestinationId" class="text-decoration-none">
                         <div class="destination-card">
-                            <div class="destination-card-img-placeholder">📷</div>
+                            @if (!string.IsNullOrEmpty(d.ThumbnailUrl))
+                            {
+                                <img src="@d.ThumbnailUrl" class="destination-card-img" alt="@d.Name" />
+                            }
+                            else
+                            {
+                                <div class="destination-card-img-placeholder">📷</div>
+                            }
                             <div class="destination-card-overlay">
                                 <h4>@d.Name</h4>
                                 <p class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>@d.Region</p>
